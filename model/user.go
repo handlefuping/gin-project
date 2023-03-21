@@ -4,7 +4,7 @@ package model
 
 type User struct {
 	Model
-	UserName string `json:"user_name" form:"userName" binding:"required"`
+	UserName string `json:"user_name" form:"user_name" binding:"required"`
 	Password string `json:"-" form:"password" binding:"required"`
 }
 func GetUserById(id string) (*User, error) {

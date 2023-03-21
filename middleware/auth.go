@@ -17,7 +17,7 @@ func AuthRequired() gin.HandlerFunc {
 		//	c.Next()
 		//}
 
-		//c.Next()
+		c.Next()
 
 	}
 }

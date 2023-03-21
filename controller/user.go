@@ -3,10 +3,11 @@ package controller
 import (
 	"gin-project/model"
 	"gin-project/util"
-	"github.com/gin-gonic/gin"
 	"path/filepath"
 	"strconv"
 	"time"
+
+	"github.com/gin-gonic/gin"
 )
 
 type User struct {
@@ -83,9 +84,9 @@ func (receiver User) LogoutUser(ctx *gin.Context)  {
 	util.SuccessJsonResp(ctx, nil, 0)
 }
 
-// Upload 用户上传视频
-func (receiver User) Upload(ctx *gin.Context)  {
-	file, err := ctx.FormFile("video")
+// UploadMedia  用户上传视频
+func (receiver User) UploadMedia(ctx *gin.Context)  {
+	file, err := ctx.FormFile("media")
 	if err != nil {
 		util.FailJsonResp(ctx, 400, "请选择视频")
 		return
@@ -96,28 +97,59 @@ func (receiver User) Upload(ctx *gin.Context)  {
 	name := util.RandStr() + file.Filename
 
 	// 文件存储本地路径
-	localUrl := filepath.Join(util.GetVideoStoreDir(), name )
+	localUrl := filepath.Join(util.GetMediaStoreDir(), name )
 
 	err = ctx.SaveUploadedFile(file, localUrl)
 	if err != nil {
 		util.FailJsonResp(ctx, 400, "视频存储错误：" + err.Error())
 		return
 	}
-	//userId, _, _ := ctx.Request.BasicAuth()
-	//userIDn, _ := strconv.Atoi(userId)
-	video := &model.Video{
+	
+	media := &model.Media{
 		OriginName: file.Filename,
 		Size: file.Size,
 		Name: name,
 		UserID: 1,
 		LocalUrl: localUrl,
+		Status: 0,
 
 	}
-	err = model.CreateVideo(video)
+	err = model.CreateMedia(media)
 	if err != nil {
 		util.FailJsonResp(ctx,400, err.Error())
 	} else {
-		util.SuccessJsonResp(ctx, video, 1)
+		util.SuccessJsonResp(ctx, media, 1)
 	}
 
+}
+
+func (receiver User) ChangeMediaStatus(ctx *gin.Context, status int)  {
+	mediaId := ctx.Param("id")
+	userId, _, _  := ctx.Request.BasicAuth()
+
+	if mediaId == "" {
+		util.FailJsonResp(ctx, 400, "视频id不能为空")
+		return
+	}
+	if err := model.ProbMedia(mediaId, userId);  err != nil {
+		util.FailJsonResp(ctx, 400, err.Error())
+		return
+	}
+	if media, err := model.UpdateMedia(mediaId, status); err != nil {
+		util.FailJsonResp(ctx, 400, err.Error())
+	} else {
+		util.SuccessJsonResp(ctx, media, 1)
+	}
+}
+
+// PublicMedia 用户发布视频
+func (receiver User) PublicMedia(ctx *gin.Context)  {
+
+	receiver.ChangeMediaStatus(ctx, 1)
+}
+
+// BanMedia  用户下架视频
+func (receiver User) BanMedia(ctx *gin.Context)  {
+
+	receiver.ChangeMediaStatus(ctx, -1)
 }
