@@ -4,8 +4,8 @@ package model
 
 type User struct {
 	Model
-	UserName string `json:"user_name" form:"user_name" binding:"required"`
-	Password string `json:"-" form:"password" binding:"required"`
+	UserName string `json:"username" form:"username" binding:"required"`
+	Password string `json:"password,omitempty" form:"password" binding:"required"`
 }
 func GetUserById(id string) (*User, error) {
 	user := &User{}

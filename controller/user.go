@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"fmt"
 	"gin-project/model"
 	"gin-project/util"
 	"path/filepath"
@@ -34,7 +35,7 @@ func (receiver User) GetUserById(ctx *gin.Context)  {
 // RegisterUser 注册用户
 func (receiver User) RegisterUser(ctx *gin.Context)  {
 	var postData model.User
-	if ctx.ShouldBind(&postData) != nil {
+	if ctx.ShouldBindJSON(&postData) != nil {
 
 		util.FailJsonResp(ctx, 400, "用户名和密码不能为空")
 		return
@@ -44,17 +45,21 @@ func (receiver User) RegisterUser(ctx *gin.Context)  {
 		return
 	}
 	user, err := model.RegisterUser(postData.UserName, postData.Password)
+	fmt.Println(user)
 	if err != nil {
 		util.FailJsonResp(ctx, 400, err.Error())
 	} else {
-		util.SuccessJsonResp(ctx, user, 1)
+		util.SuccessJsonResp(ctx, model.User{
+			UserName: user.UserName,
+		}, 1)
 	}
 }
 
 // LoginUser 用户登陆
 func (receiver User) LoginUser(ctx *gin.Context)  {
+	fmt.Println(ctx.PostForm("username"), 777)
 	var postData model.User
-	if ctx.ShouldBind(&postData) != nil {
+	if ctx.ShouldBindJSON(&postData) != nil {
 		util.FailJsonResp(ctx, 400, "用户名和密码不能为空")
 		return
 	}
@@ -70,7 +75,9 @@ func (receiver User) LoginUser(ctx *gin.Context)  {
 		} else {
 			ctx.Request.SetBasicAuth(strconv.FormatUint(uint64(user.ID), 10), tokenStr)
 			util.SuccessJsonResp(ctx, gin.H{
-				"user": user,
+				"user": model.User{
+					UserName: user.UserName,
+				},
 				"token": ctx.GetHeader("Authorization"),
 			}, 1)
 		}

@@ -1,6 +1,5 @@
 package util
 
-
 import "github.com/gin-gonic/gin"
 
 //type Resp struct {

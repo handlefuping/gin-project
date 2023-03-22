@@ -6,12 +6,14 @@ import (
 	"gin-project/middleware"
 	"gin-project/model"
 	"gin-project/util"
+	"log"
+	"os"
+
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/viper"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
-	"log"
-	"os"
 )
 
 func initViper()  {
@@ -54,6 +56,11 @@ func main() {
 	r.MaxMultipartMemory = viper.GetInt64("video.limitSize")
 	r.Use(gin.Logger())
 	r.Use(gin.Recovery())
+
+	config := cors.DefaultConfig()
+  config.AllowOrigins = []string{"*"}
+	config.AllowHeaders = append(config.AllowHeaders, "Authorization")
+	r.Use(cors.New(config))
 
 	// 媒体静态文件服务
 	r.Static(util.GetMediaStoreDir(), util.GetMediaStoreDir())
