@@ -21,7 +21,7 @@ func SuccessJsonResp(ctx *gin.Context, data interface{}, count int)  {
 }
 
 func FailJsonResp(ctx *gin.Context, code int, msg string)  {
-	ctx.JSON(200, gin.H{
+	ctx.JSON(500, gin.H{
 		"code": code,
 		"data": nil,
 		"msg": msg,

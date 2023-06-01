@@ -6,7 +6,7 @@
     "port": "3306"
   },
   "media": {
-    "limitSize": 1024,
+    "limitSize": 200,
     "dir": "media"
   }
 }

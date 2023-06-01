@@ -1,9 +1,9 @@
 package util
 
 import (
-	"fmt"
-	"github.com/golang-jwt/jwt/v4"
 	"time"
+
+	"github.com/golang-jwt/jwt/v4"
 )
 
 var JWTKEY = []byte("AllYourBase")
@@ -28,7 +28,6 @@ func GenerateTokenStr (issuer string, expires time.Duration) (string, error) {
 }
 
 func ParseTokenStr (tokenStr string) (string, error) {
-	fmt.Println(tokenStr, "tokenStr")
 	token, err := jwt.ParseWithClaims(tokenStr, &MyCustomClaims{}, func(token *jwt.Token) (interface{}, error) {
 		return JWTKEY, nil
 	})

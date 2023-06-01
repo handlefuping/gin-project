@@ -69,6 +69,7 @@ func main() {
 	user := r.Group("/user")
 
 	user.POST("/login", userController.LoginUser)
+	user.POST("/logout", userController.LogoutUser)
 	user.POST("/register", userController.RegisterUser)
 	user.Use(middleware.AuthRequired())
 
